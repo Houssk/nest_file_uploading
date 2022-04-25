@@ -36,4 +36,21 @@ export class AppController {
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
     return res.sendFile(image, { root: './files' });
   }
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './files',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+)
+async uploadedFileSize(@UploadedFile() file) {
+  const response = {
+    filename: file.filename,
+    size: file.size,
+  };
+  return response;
+}
 }
