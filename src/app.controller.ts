@@ -27,6 +27,8 @@ export class AppController {
     const response = {
       originalname: file.originalname,
       filename: file.filename,
+      mimeType : file.mimeType,
+      path : file.path,
     };
     return response;
   }
