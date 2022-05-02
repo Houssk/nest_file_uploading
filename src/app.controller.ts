@@ -32,10 +32,19 @@ export class AppController {
     };
     return response;
   }
+  async runDetection(@UploadedFile() file) {
+    const spawn = require("child_process").spawn;
+    const pythonProcess = spawn('python',["C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/detection.py", file.filename]);
+    pythonProcess.stdout.on('data', (data) => {
+      return data
+    });
+  }
+
   @Get(':imgpath')
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
     return res.sendFile(image, { root: './files' });
   }
+  
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -45,12 +54,12 @@ export class AppController {
       }),
       fileFilter: imageFileFilter,
     }),
-)
-async uploadedFileSize(@UploadedFile() file) {
-  const response = {
-    filename: file.filename,
-    size: file.size,
-  };
+    )
+  async uploadedFileSize(@UploadedFile() file) {
+    const response = {
+      filename: file.filename,
+      size: file.size,
+    };
   return response;
 }
 }
