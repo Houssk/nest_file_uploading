@@ -41,7 +41,12 @@ export class AppController {
   @Post()
   async runDetection(@UploadedFile() file) {
     const spawn = require("child_process").spawn;
-    const pythonProcess = spawn('python',["C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/detection.py", file.filename]);
+    const pythonProcess = spawn('python', ["C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/detection.py", file.filename]);
+    
+    pythonProcess.stdout.on('data', function(data) {
+
+      console.log(data.toString());
+    });
   }
 
   @Post('upload')
