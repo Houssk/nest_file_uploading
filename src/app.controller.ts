@@ -24,11 +24,20 @@ export class AppController {
       }),
   )
   async uploadedFile(@UploadedFile() file) {
-    const spawn = require("child_process").spawn;
-    const pythonProcess = spawn('python', ["C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/detection.py", file.filename]);
-    pythonProcess.stdout.on('data', function(data) {
+    const PythonShell = require('python-shell').PythonShell;
 
-      console.log(data.toString());
+    var options = {
+      mode: 'text',
+      pythonPath: 'C:/Users/FRFSIE_005/anaconda3/envs/environmentIA_YOLO/python',
+      scriptPath: 'C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/universal_landmark_detection',
+      args: [file.filename]
+    };
+
+    PythonShell.run('detection.py', options, function (err, results) {
+      if (err) 
+        throw err;
+      // Results is an array consisting of messages collected during execution
+      console.log('results: %j', results);
     });
 
     const response = {
@@ -37,9 +46,7 @@ export class AppController {
       mimeType : file.mimeType,
       path : file.path,
     };
-
     return response;
-    
   }
 
   @Get(':imgpath')
