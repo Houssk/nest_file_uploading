@@ -29,6 +29,7 @@ export class AppController {
       filename: file.filename,
       mimeType : file.mimeType,
       path : file.path,
+      work : "done"
     };
     return response;
   }
