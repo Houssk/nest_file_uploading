@@ -24,6 +24,13 @@ export class AppController {
       }),
   )
   async uploadedFile(@UploadedFile() file) {
+    const spawn = require("child_process").spawn;
+    const pythonProcess = spawn('python', ["C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/detection.py", file.filename]);
+    
+    pythonProcess.stdout.on('data', function(data) {
+      console.log(data.toString());
+    });
+
     const response = {
       originalname: file.originalname,
       filename: file.filename,
@@ -37,17 +44,7 @@ export class AppController {
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
     return res.sendFile(image, { root: './files' });
   }
-  
-  @Post()
-  async runDetection(@UploadedFile() file) {
-    const spawn = require("child_process").spawn;
-    const pythonProcess = spawn('python', ["C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/detection.py", file.filename]);
-    
-    pythonProcess.stdout.on('data', function(data) {
 
-      console.log(data.toString());
-    });
-  }
 
   @Post('upload')
   @UseInterceptors(
