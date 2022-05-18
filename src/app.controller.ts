@@ -32,6 +32,7 @@ export class AppController {
     const PythonShell = require('python-shell').PythonShell; //A MODIFIER
 
     let options = {
+      // TODO 
         mode: 'text',
         pythonPath: 'C:/Users/FRFSIE_005/anaconda3/envs/environmentIA_YOLO2/python',
         scriptPath: 'C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/universal_landmark_detection',
@@ -40,16 +41,15 @@ export class AppController {
       
     let pyshell = new PythonShell('detection.py', options);
     
-    var result = await pyshell.end(function(err){
+    return pyshell.end(function(err){
       if (err){
         throw err;
       }
-       
+      
       console.log('finished') 
       
-    }).then();
+    });
 
-    console.log(result.terminated)
     this.eventDemo.emitEvent()
     
     //var fs = require('fs');
