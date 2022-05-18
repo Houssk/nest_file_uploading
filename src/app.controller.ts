@@ -10,9 +10,13 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import {editFileName, imageFileFilter} from './utils/file-uploading.utils';
+import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
+import { AppService,  EventDemo } from './app.service';
+//import {PythonShell} from 'python-shell';
 
 @Controller()
 export class AppController {
+  constructor(private readonly eventDemo: EventDemo) {}
   @Post()
   @UseInterceptors(
       FileInterceptor('image', {
@@ -24,30 +28,61 @@ export class AppController {
       }),
   )
   async uploadedFile(@UploadedFile() file) {
-    const PythonShell = require('python-shell').PythonShell;
+    
+    const PythonShell = require('python-shell').PythonShell; //A MODIFIER
 
-    var options = {
-      mode: 'text',
-      pythonPath: 'C:/Users/FRFSIE_005/anaconda3/envs/environmentIA_YOLO/python',
-      scriptPath: 'C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/universal_landmark_detection',
-      args: [file.filename]
-    };
-
-    PythonShell.run('detection.py', options, function (err, results) {
-      if (err) 
+    let options = {
+        mode: 'text',
+        pythonPath: 'C:/Users/FRFSIE_005/anaconda3/envs/environmentIA_YOLO2/python',
+        scriptPath: 'C:/Users/FRFSIE_005/Desktop/IA_CyriaqueB/Code/YOLO_Hip_Landmark_Detection-main/universal_landmark_detection',
+        args: [file.filename]
+      };
+      
+    let pyshell = new PythonShell('detection.py', options);
+    
+    var result = await pyshell.end(function(err){
+      if (err){
         throw err;
-      // Results is an array consisting of messages collected during execution
-      console.log('results: %j', results);
-    });
+      }
+       
+      console.log('finished') 
+      
+    }).then();
 
-    const response = {
-      originalname: file.originalname,
-      filename: file.filename,
-      mimeType : file.mimeType,
-      path : file.path,
-    };
-    return response;
+    console.log(result.terminated)
+    this.eventDemo.emitEvent()
+    
+    //var fs = require('fs');
+    //var monJson = JSON.parse(fs.readFileSync('./files/'+file.filename+'_data.json', 'utf8'))
+
+    //const response = {
+    //    originalname: file.originalname,
+    //    filename: file.filename,
+    //    mimeType : file.mimeType,
+    //    path : file.path,
+    //    coord : monJson,
+    //};
+    //console.log(response)
+  
+    //return (response)
   }
+
+  @OnEvent('close', { async: true })
+    sendLandmarks() {
+      //var fs = require('fs');
+      //var monJson = JSON.parse(fs.readFileSync('./files/'+file.filename+'_data.json', 'utf8'))
+  
+      //const response = {
+      //    originalname: file.originalname,
+      //    filename: file.filename,
+      //    mimeType : file.mimeType,
+      //    path : file.path,
+      //    coord : monJson,
+      //};
+      console.log('test')
+    
+      //return (response)
+    }
 
   @Get(':imgpath')
   seeUploadedFile(@Param('imgpath') image, @Res() res) {
