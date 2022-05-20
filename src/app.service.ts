@@ -12,7 +12,7 @@ export class AppService {
 export class EventDemo {
     constructor(private eventEmitter: EventEmitter2){}
 
-    emitEvent(file) {
+    emitEvent(file: string) {
         this.eventEmitter.emit('json.created',file)
     }
 
