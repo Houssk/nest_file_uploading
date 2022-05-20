@@ -11,10 +11,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import {editFileName, imageFileFilter} from './utils/file-uploading.utils';
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
+import { AppService, EventDemo } from './app.service';
 //import {PythonShell} from 'python-shell';
 
 @Controller()
 export class AppController {
+  constructor(private eventDemo: EventDemo) {}
+
   @Post()
   @UseInterceptors(
       FileInterceptor('image', {
@@ -26,7 +29,7 @@ export class AppController {
       }),
   )
   async uploadedFile(@UploadedFile() file) {
-    
+
     const PythonShell = require('python-shell').PythonShell; //A MODIFIER
 
     let options = {
@@ -39,27 +42,26 @@ export class AppController {
       
     let pyshell = new PythonShell('detection.py', options);
     
-    pyshell.end(function(err){
+    pyshell.end(err =>{
+      
       if (err){
         throw err;
       }
       console.log('finished') 
-      
+      this.eventDemo.emitEvent(file.filename);
+
     });
 
-    //var fs = require('fs');
-    //var monJson = JSON.parse(fs.readFileSync('./files/'+file.filename+'_data.json', 'utf8'))
-
-    const response = {
-        originalname: file.originalname,
-        filename: file.filename,
-        mimeType : file.mimeType,
-        path : file.path,
-    };
-    console.log(response)
-  
-    return (response)
   }
+
+
+  @OnEvent('json.created')
+    listentToEvent(msg: string) {
+        console.log('Message Received: ', msg)
+        var fs = require('fs');
+        var monJson = JSON.parse(fs.readFileSync('./files/'+msg+'_data.json', 'utf8'))
+        return(monJson) //Le Json ne s'envoit pas 
+    }
 
 
   @Get(':imgpath')
@@ -85,4 +87,5 @@ export class AppController {
     };
   return response;
 }
+
 }

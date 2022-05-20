@@ -12,9 +12,8 @@ export class AppService {
 export class EventDemo {
     constructor(private eventEmitter: EventEmitter2){}
 
-    emitEvent() {
-        this.eventEmitter.emit('json.created')
-        console.log('event emitted')
+    emitEvent(file) {
+        this.eventEmitter.emit('json.created',file)
     }
 
     @OnEvent('json.created')
