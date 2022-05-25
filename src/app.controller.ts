@@ -13,6 +13,7 @@ import {PythonShell} from 'python-shell';
 
 @Controller()
 export class AppController {
+    // tslint:disable-next-line:no-empty
     constructor() {
     }
 
@@ -20,7 +21,7 @@ export class AppController {
     @UseInterceptors(
         FileInterceptor('image', {
             storage: diskStorage({
-                destination: './files',
+                destination: PATH.FILE_DIR,
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter,
@@ -37,7 +38,6 @@ export class AppController {
             scriptPath: PATH.SCRIPT_PATH,
             args: [file.filename],
         };
-
         return new Promise(resolve => {
             PythonShell.run('detection.py', options, (err, result) => {
                 if (err) {
@@ -48,12 +48,13 @@ export class AppController {
             });
         });
     }
+
     /**
-     * @param msg
+     * @param fileName
      */
-    listenToEvent(msg: string) {
-        console.log('Message Received: ', msg);
+    listenToEvent(fileName: string) {
+        console.log('Message Received: ', fileName);
         const fs = require('fs');
-        return JSON.parse(fs.readFileSync('./files/' + msg + '_data.json', 'utf8'));
+        return [JSON.parse(fs.readFileSync(`${PATH.FILE_DIR}/${fileName}_data.json`, 'utf8')), fileName];
     }
 }
