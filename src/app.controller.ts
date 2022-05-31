@@ -2,8 +2,7 @@ import {
     Controller,
     Post,
     UseInterceptors,
-    UploadedFile,
-    Body
+    UploadedFile, Get,
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {diskStorage} from 'multer';
@@ -15,8 +14,14 @@ import {PythonShell} from 'python-shell';
 @Controller()
 export class AppController {
     filename: string;
+
     // tslint:disable-next-line:no-empty
     constructor() {
+    }
+
+    @Get()
+    hello() {
+        return 'this hello world';
     }
 
     @Post('upload')
@@ -35,8 +40,8 @@ export class AppController {
      *  @Return Promise
      */
     async uploadedFile(@UploadedFile() file) {
-        this.filename = file.filename
-        console.log(file)
+        this.filename = file.filename;
+        console.log(file);
         const options: Options = {
             mode: 'text',
             pythonPath: PATH.PYTHON_PATH,
@@ -52,7 +57,7 @@ export class AppController {
             });
         });
     }
-        
+
     @Post('detection')
     async launchDetection() {
         const options: Options = {
@@ -61,10 +66,9 @@ export class AppController {
             scriptPath: PATH.SCRIPT_PATH,
             args: [this.filename],
         };
-        if (this.filename === undefined){
+        if (this.filename === undefined) {
             return {image: false}
-        }
-        else {
+        } else {
             return new Promise(resolve => {
                 PythonShell.run('detection.py', options, (err, result) => {
                     if (err) {
@@ -73,18 +77,17 @@ export class AppController {
                     console.log(result);
                     resolve(this.listenToAnswer(this.filename, 'data.json'));
                 });
-            }); 
+            });
         }
     }
 
     /**
      * @param fileName
+     * @param extension
      */
     listenToAnswer(fileName: string, extension: string) {
         console.log('Message Received: ', fileName);
         const fs = require('fs');
         return [JSON.parse(fs.readFileSync(`${PATH.FILE_DIR}/${fileName}_${extension}`, 'utf8')), fileName];
     }
-
-
 }
