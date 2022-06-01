@@ -50,7 +50,14 @@ export class AppController {
             scriptPath: PATH.SCRIPT_CIRCLE_PATH,
             args: [this.filename],
         };
-        return 'string'
+        return new Promise(resolve => {
+            PythonShell.run('Size_Marker_Detector.py', options, (err) => {
+                if (err) {
+                    throw err;
+                }
+                resolve(this.listenToAnswer(this.filename, 'circle.json'));
+            });
+        });
     }
 
     @Post('detection')
@@ -69,6 +76,7 @@ export class AppController {
                     if (err) {
                         throw err;
                     }
+                    console.log(result);
                     resolve(this.listenToAnswer(this.filename, 'data.json'));
                 });
             });
