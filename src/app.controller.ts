@@ -58,7 +58,7 @@ export class AppController {
                 resolve(this.listenToAnswer(this.filename, 'circle.json'));
             });
         });
-    }
+    }*/
 
     @Post('detection')
     async launchDetection() {
@@ -81,7 +81,7 @@ export class AppController {
                 });
             });
         }
-    }*/
+    }
 
     /**
      * @param fileName
