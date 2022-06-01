@@ -54,7 +54,7 @@ export class AppController {
             return {image: false}
         } else {
             return new Promise(resolve => {
-                PythonShell.run('Size_Marker_Detector.py', options, (err) => {
+                PythonShell.run('Size_Marker_Detector.py', options, (err, res) => {
                     if (err) {
                         throw err;
                     }
@@ -80,7 +80,6 @@ export class AppController {
                     if (err) {
                         throw err;
                     }
-                    console.log(result);
                     resolve(this.listenToAnswer(this.filename, 'data.json'));
                 });
             });
