@@ -26,7 +26,7 @@ export class AppController {
         return 'this hello world';
     }
 
-    @Post('upload')
+   /* @Post('upload')
     @UseInterceptors(
         FileInterceptor('image', {
             storage: diskStorage({
@@ -37,10 +37,10 @@ export class AppController {
         }),
     )
 
-    /**
+    /!**
      *  @Params @UploadedFile
      *  @Return Promise
-     */
+     *!/
     async uploadedFile(@UploadedFile() file) {
         this.filename = file.filename;
         console.log(file);
@@ -81,7 +81,7 @@ export class AppController {
                 });
             });
         }
-    }
+    }*/
 
     /**
      * @param fileName
