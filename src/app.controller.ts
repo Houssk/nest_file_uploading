@@ -8,7 +8,9 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {diskStorage} from 'multer';
 import {editFileName, imageFileFilter} from './utils/file-uploading.utils';
 import * as PATH from 'shared/path.constant';
+// @ts-ignore
 import {Options} from 'python-shell';
+// @ts-ignore
 import {PythonShell} from 'python-shell';
 
 @Controller()
