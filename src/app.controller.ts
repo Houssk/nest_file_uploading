@@ -50,17 +50,21 @@ export class AppController {
             scriptPath: PATH.SCRIPT_CIRCLE_PATH,
             args: [this.filename],
         };
-        return new Promise(resolve => {
-            PythonShell.run('Size_Marker_Detector.py', options, (err) => {
-                if (err) {
-                    throw err;
-                }
-                resolve(this.listenToAnswer(this.filename, 'circle.json'));
+        if (this.filename === undefined) {
+            return {image: false}
+        } else {
+            return new Promise(resolve => {
+                PythonShell.run('Size_Marker_Detector.py', options, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                    resolve(this.listenToAnswer(this.filename, 'circle.json'));
+                });
             });
-        });
+        }
     }
 
- /*   @Post('detection')
+    @Post('detection')
     async launchDetection() {
         const options: Options = {
             mode: 'text',
@@ -81,7 +85,7 @@ export class AppController {
                 });
             });
         }
-    }*/
+    }
 
     /**
      * @param fileName
