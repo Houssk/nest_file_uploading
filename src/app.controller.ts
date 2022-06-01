@@ -50,18 +50,7 @@ export class AppController {
             scriptPath: PATH.SCRIPT_CIRCLE_PATH,
             args: [this.filename],
         };
-        if (this.filename === undefined) {
-            return {image: false}
-        } else {
-            return new Promise(resolve => {
-                PythonShell.run('Size_Marker_Detector.py', options, (err, res) => {
-                    if (err) {
-                        throw err;
-                    }
-                    resolve(this.listenToAnswer(this.filename, 'circle.json'));
-                });
-            });
-        }
+        return 'string'
     }
 
     @Post('detection')
