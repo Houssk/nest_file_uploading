@@ -3,7 +3,9 @@ import {
     Post,
     UseInterceptors,
     UploadedFile,
-    Body
+    Body,
+    Req,
+    Query
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {diskStorage} from 'multer';
@@ -36,13 +38,14 @@ export class AppController {
      */
     async uploadedFile(@UploadedFile() file) {
         this.filename = file.filename
-        console.log(file)
+
         const options: Options = {
             mode: 'text',
             pythonPath: PATH.PYTHON_PATH,
             scriptPath: PATH.SCRIPT_CIRCLE_PATH,
             args: [this.filename],
         };
+
         return new Promise(resolve => {
             PythonShell.run('Size_Marker_Detector.py', options, (err) => {
                 if (err) {
@@ -54,13 +57,17 @@ export class AppController {
     }
         
     @Post('detection')
-    async launchDetection() {
+    /**
+     *  @Return Promise
+     */
+    async launchDetection(@Body() hipInfos) {
         const options: Options = {
             mode: 'text',
             pythonPath: PATH.PYTHON_PATH,
             scriptPath: PATH.SCRIPT_PATH,
-            args: [this.filename],
+            args: [this.filename, hipInfos[0]['nbrHip'], hipInfos[0]['side']],
         };
+        
         if (this.filename === undefined){
             return {image: false}
         }
