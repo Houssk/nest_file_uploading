@@ -22,7 +22,10 @@
   "dependencies": {
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
+    "@nestjs/event-emitter": "^1.1.1",
     "@nestjs/platform-express": "^6.11.11",
+    "child-process": "^1.0.2",
+    "python-shell": "^3.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3"

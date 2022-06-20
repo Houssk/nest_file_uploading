@@ -1,39 +1,97 @@
 import {
-  Controller,
-  Get,
-  Post,
-  UseInterceptors,
-  UploadedFile,
-  Res,
-  Param,
+    Controller,
+    Post,
+    UseInterceptors,
+    UploadedFile,
+    Body,
+    Req,
+    Query
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import {FileInterceptor} from '@nestjs/platform-express';
+import {diskStorage} from 'multer';
 import {editFileName, imageFileFilter} from './utils/file-uploading.utils';
+import * as PATH from 'shared/path.constant';
+import {Options} from 'python-shell';
+import {PythonShell} from 'python-shell';
 
 @Controller()
 export class AppController {
-  @Post()
-  @UseInterceptors(
-      FileInterceptor('image', {
-        storage: diskStorage({
-          destination: './files',
-          filename: editFileName,
+    filename: string;
+    // tslint:disable-next-line:no-empty
+    constructor() {
+    }
+
+    @Post('upload')
+    @UseInterceptors(
+        FileInterceptor('image', {
+            storage: diskStorage({
+                destination: PATH.FILE_DIR,
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter,
         }),
-        fileFilter: imageFileFilter,
-      }),
-  )
-  async uploadedFile(@UploadedFile() file) {
-    const response = {
-      originalname: file.originalname,
-      filename: file.filename,
-      mimeType : file.mimeType,
-      path : file.path,
-    };
-    return response;
-  }
-  @Get(':imgpath')
-  seeUploadedFile(@Param('imgpath') image, @Res() res) {
-    return res.sendFile(image, { root: './files' });
-  }
+    )
+
+    /**
+     *  @Params @UploadedFile
+     *  @Return Promise
+     */
+    async uploadedFile(@UploadedFile() file) {
+        this.filename = file.filename
+
+        const options: Options = {
+            mode: 'text',
+            pythonPath: PATH.PYTHON_PATH,
+            scriptPath: PATH.SCRIPT_CIRCLE_PATH,
+            args: [this.filename],
+        };
+
+        return new Promise(resolve => {
+            PythonShell.run('Size_Marker_Detector.py', options, (err) => {
+                if (err) {
+                    throw err;
+                }
+                resolve(this.listenToAnswer(this.filename, 'circle.json'));
+            });
+        });
+    }
+        
+    @Post('detection')
+    /**
+     *  @Return Promise
+     */
+    async launchDetection(@Body() hipInfos) {
+        const options: Options = {
+            mode: 'text',
+            pythonPath: PATH.PYTHON_PATH,
+            scriptPath: PATH.SCRIPT_PATH,
+            args: [this.filename, hipInfos[0]['nbrHip'], hipInfos[0]['side']],
+        };
+        
+        if (this.filename === undefined){
+            return {image: false}
+        }
+        else {
+            return new Promise(resolve => {
+                PythonShell.run('detection.py', options, (err, result) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log(result);
+                    resolve(this.listenToAnswer(this.filename, 'data.json'));
+                });
+            }); 
+        }
+    }
+
+    /**
+     * @param fileName
+     */
+    listenToAnswer(fileName: string, extension: string) {
+        console.log('Message Received: ', fileName);
+        const fs = require('fs');
+        return [JSON.parse(fs.readFileSync(`${PATH.FILE_DIR}/${fileName}_${extension}`, 'utf8')), fileName];
+    }
+
+
 }
