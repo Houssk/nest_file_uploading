@@ -93,7 +93,7 @@ export class AppController {
             mode: 'text',
             pythonPath: PATH.PYTHON_PATH,
             scriptPath: PATH.SCRIPT_PATH,
-            args: [this.filename, rodData[0]['deltaCut'], rodData[0]['xDiaph'], rodData[0]['yDIaph'], rodData[0]['xTroch'], rodData[0]['yTroch'], rodData[0]['angle']],
+            args: [this.filename, rodData[0]['deltaCut'], parseInt(rodData[0]['xDiaph']), parseInt(rodData[0]['yDiaph']), parseInt(rodData[0]['xTroch']), parseInt(rodData[0]['yTroch']), rodData[0]['angle']],
         };
         console.log('size launched')
         return new Promise(resolve => {
